@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-boardgame-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: boardgame-app
+  template:
+    metadata:
+      labels:
+        app: boardgame-app
+    spec:
+      containers:
+      - name: my-boardgame-app
+        image: boardgame.azurecr.io/acr-repo1:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8085
+# service type loadbalancer       
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: boardgame-app
+    k8s-app: boardgame-app
+  name: boardgame-app
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8085
+  type: LoadBalancer
+  selector:
+    app: boardgame-app
